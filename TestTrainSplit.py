@@ -30,8 +30,8 @@ df = pd.read_csv(file_path)
 
 # Split into train (first 900 rows) and test (last 100 rows)
 train_df = df.iloc[:10]  # it should be 900
-test_df = df.iloc[-10:]  # it should be 10
-
+#test_df = df.iloc[-10:]  # it should be 10
+test_df = df.iloc[:10]
 # Save the split datasets
 train_csv = "train.csv"
 test_csv = "test.csv"
@@ -41,11 +41,6 @@ test_df.to_csv(test_csv, index=False)
 
 print(f"Train data saved to {train_csv}")
 print(f"Test data saved to {test_csv}")
-
-#######################################
-
-import pandas as pd
-from sklearn.model_selection import train_test_split
 
 # Load the train CSV
 train_csv = "train.csv"  # Path to your existing train.csv file
@@ -63,5 +58,4 @@ val_df.to_csv(val_csv_split, index=False)
 
 print(f"Train data saved to {train_csv_split}")
 print(f"Validation data saved to {val_csv_split}")
-
-##########################################
+#######################################
