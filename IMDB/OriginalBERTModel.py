@@ -1,4 +1,3 @@
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import transformers
@@ -12,7 +11,7 @@ output_csv = "../Dataset/IMDB/output_file.csv"
 df = pd.read_csv(output_csv)
 
 # Split into train (first 900 rows) and test (last 100 rows)
-train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
+train_df, test_df = train_test_split(df, test_size=0.1, random_state=62)
 
 train_dataset = textattack.datasets.Dataset(train_df.values.tolist(), ["input"])
 test_dataset = textattack.datasets.Dataset(test_df.values.tolist(), ["input"]) #, {0: 1, 1: 0} , ["Positive","Negative"])

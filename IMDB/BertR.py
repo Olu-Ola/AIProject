@@ -1,11 +1,8 @@
 import transformers
 import textattack
 from textattack import Attacker
-from textattack.attack_recipes import TextFoolerJin2019
 from textattack.datasets import Dataset
 import pandas as pd
-import nltk
-nltk.download('averaged_perceptron_tagger_eng')
 from textattack.attack_results import SuccessfulAttackResult
 from textattack.loggers import CSVLogger
 from sklearn.model_selection import train_test_split
@@ -13,7 +10,7 @@ import pandas as pd
 from textattack.loggers import CSVLogger
 from textattack.attack_results import SuccessfulAttackResult
 from IPython.display import display, HTML
-
+from textattack.attack_recipes import BAEGarg2019
 output_csv = "../Dataset/IMDB/output_file.csv"
 df = pd.read_csv(output_csv)
 
@@ -25,12 +22,10 @@ model = transformers.AutoModelForSequenceClassification.from_pretrained("./outpu
 tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
 model_wrapper = textattack.models.wrappers.HuggingFaceModelWrapper(model, tokenizer)
 
-
-textfooler = TextFoolerJin2019.build(model_wrapper)
-
+baerecipe = BAEGarg2019.build(model_wrapper)
 
 # Attack the dataset
-attack_results = Attacker(textfooler, test_dataset, textattack.AttackArgs(num_examples=-1)).attack_dataset()
+attack_results = Attacker(baerecipe, test_dataset, textattack.AttackArgs(num_examples=-1)).attack_dataset()
 
 # Increase column width for better readability
 pd.options.display.max_colwidth = 480
@@ -47,7 +42,7 @@ for result in attack_results:
 results = pd.DataFrame.from_records(logger.row_list)
 #display(HTML(results[["original_text", "perturbed_text"]].to_html(escape=False)))
 # Save DataFrame as HTML
-results[["original_text", "perturbed_text"]].to_html("TextFoolerresults.html", escape=False)
+results[["original_text", "perturbed_text"]].to_html("BertR_results.html", escape=False)
 
 print("Results saved to results.html. Open this file in a browser to view.")
 

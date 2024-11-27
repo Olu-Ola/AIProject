@@ -21,37 +21,18 @@ df = pd.read_csv(output_csv)
 train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
 test_dataset = textattack.datasets.Dataset(test_df.values.tolist(), ["input"])
 print(len(test_dataset))
-model = transformers.AutoModelForSequenceClassification.from_pretrained("./outputs/2024-11-27-04-35-13-047658/best_model/")
+model = textattack.models.helpers.lstm_for_classification.LSTMForClassification.from_pretrained("lstm-imdb")
 tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
 model_wrapper = textattack.models.wrappers.HuggingFaceModelWrapper(model, tokenizer)
 
 
-textfooler = TextFoolerJin2019.build(model_wrapper)
+training_args = textattack.TrainingArgs(
+    num_epochs=2,             # Number of epochs
+    per_device_train_batch_size=16, # Batch size
+    learning_rate=2e-5,             # Learning rate
+    early_stopping_epochs=85
+)
+trainer = textattack.Trainer(model_wrapper, task_type='classification', attack=None, train_dataset=train_dataset, eval_dataset=test_dataset, training_args=training_args)
 
-
-# Attack the dataset
-attack_results = Attacker(textfooler, test_dataset, textattack.AttackArgs(num_examples=-1)).attack_dataset()
-
-# Increase column width for better readability
-pd.options.display.max_colwidth = 480
-
-# Initialize logger
-logger = CSVLogger(color_method="html")
-
-# Log attack results
-for result in attack_results:
-    if isinstance(result, SuccessfulAttackResult):
-        logger.log_attack_result(result)
-
-# Create DataFrame and display
-results = pd.DataFrame.from_records(logger.row_list)
-#display(HTML(results[["original_text", "perturbed_text"]].to_html(escape=False)))
-# Save DataFrame as HTML
-results[["original_text", "perturbed_text"]].to_html("TextFoolerresults.html", escape=False)
-
-print("Results saved to results.html. Open this file in a browser to view.")
-
-
-# Ensure logger is properly closed
-logger.flush()
-logger.close()
+trainer.train()
+#trainer.evaluate()
