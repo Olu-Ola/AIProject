@@ -1,3 +1,4 @@
 #!/bin/sh
-
-python ./TestTrainSplit.py
+conda activate AIProject
+#python ./TestTrainSplit.py
+python OriginalModel.py
