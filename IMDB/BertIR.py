@@ -10,7 +10,7 @@ import pandas as pd
 from textattack.loggers import CSVLogger
 from textattack.attack_results import SuccessfulAttackResult
 from IPython.display import display, HTML
-from BaeIR import BAEIR
+from textattack.attack_recipes import AttackRecipe
 from textattack.constraints.grammaticality import PartOfSpeech
 from textattack.constraints.pre_transformation import (
     RepeatModification,
@@ -20,6 +20,7 @@ from textattack.constraints.semantics.sentence_encoders import UniversalSentence
 from textattack.goal_functions import UntargetedClassification
 from textattack.search_methods import GreedyWordSwapWIR, GreedySearch
 from textattack.transformations import WordInsertionMaskedLM, WordSwapMaskedLM
+from BaeIR import BaeIR 
 
 output_csv = "../Dataset/IMDB/output_file.csv"
 df = pd.read_csv(output_csv)
@@ -50,7 +51,7 @@ constraints.append(use_constraint)
 goal_function = UntargetedClassification(model_wrapper)
 search_method = GreedySearch()
 
-baerecipe = BAEIR(goal_function, constraints, transformation, search_method)
+baerecipe = BaeIR(goal_function, constraints, transformation, search_method)
 baerecipe = baerecipe.build(model_wrapper)
 
 # Attack the dataset

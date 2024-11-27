@@ -17,7 +17,7 @@ from textattack.transformations import WordInsertionMaskedLM, WordSwapMaskedLM
 from textattack.attack_recipes import AttackRecipe, BAEGarg2019
 
 
-class BAEIR(AttackRecipe):
+class BaeIR(AttackRecipe):
     """Siddhant Garg and Goutham Ramakrishnan, 2019.
 
     BAE: BERT-based Adversarial Examples for Text Classification.
@@ -54,7 +54,7 @@ class BAEIR(AttackRecipe):
         #if self.mode == "insert":
         #transformation = WordInsertionMaskedLM()
         #elif self.mode == "repinsert":
-        transformations = [WordSwapMaskedLM(max_candidates=50),WordInsertionMaskedLM()]
+        transformations = [WordSwapMaskedLM(max_candidates=5), WordInsertionMaskedLM()]
         transformation = textattack.transformations.composite_transformation.CompositeTransformation(transformations)
         #else:
         #    print("Wrong Mode. Exiting....")
@@ -68,7 +68,7 @@ class BAEIR(AttackRecipe):
         # grammatical correctness of the generated adversarial example by filtering
         # out predicted tokens that do not form the same part of speech (POS) as the
         # original token t_i in the sentence.
-        constraints.append(PartOfSpeech(allow_verb_noun_swap=True))
+        constraints.append(PartOfSpeech(allow_verb_noun_swap=False, compare_against_original=False))
 
         # "To ensure semantic similarity on introducing perturbations in the input
         # text, we filter the set of top-K masked tokens (K is a pre-defined
