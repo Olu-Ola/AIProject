@@ -11,10 +11,10 @@ from textattack.constraints.pre_transformation import (
 )
 from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
 from textattack.goal_functions import UntargetedClassification
-from textattack.search_methods import GreedyWordSwapWIR
+from textattack.search_methods import GreedyWordSwapWIR, GreedySearch
 from textattack.transformations import WordInsertionMaskedLM, WordSwapMaskedLM
 
-from textattack.attack_recipes import AttackRecipe
+from textattack.attack_recipes import AttackRecipe, BAEGarg2019
 
 
 class BAEIR(AttackRecipe):
@@ -35,9 +35,6 @@ class BAEIR(AttackRecipe):
         • BAE-R+I: First replace token t, then insert a
         token to the left or right of t
     """
-    def __init__(self, mode):
-        super().__init__()  # Call the parent class's constructor
-        self.mode = mode  # Store the mode parameter as an instance attribute
 
     @staticmethod
     def build(model_wrapper):
@@ -54,14 +51,14 @@ class BAEIR(AttackRecipe):
         # the sub-words and only retain the whole words (by checking if they are
         # present in the GloVE vocabulary)"
         #
-        if self.mode == "insert":
-            transformation = WordInsertionMaskedLM()
-        elif self.mode == "repinsert":
-            transformations = [WordSwapMaskedLM(method="replace", max_candidates=50),WordInsertionMaskedLM()]
-            transformation = textattack.transformations.composite_transformation.CompositeTransformation(transformations)
-        else:
-            print("Wrong Mode. Exiting....")
-            exit()
+        #if self.mode == "insert":
+        transformation = WordInsertionMaskedLM()
+        #elif self.mode == "repinsert":
+        #    transformations = [WordSwapMaskedLM(method="replace", max_candidates=50),WordInsertionMaskedLM()]
+        #    transformation = textattack.transformations.composite_transformation.CompositeTransformation(transformations)
+        #else:
+        #    print("Wrong Mode. Exiting....")
+        #     exit()
         #
         # Don't modify the same word twice or stopwords.
         #
@@ -129,4 +126,4 @@ class BAEIR(AttackRecipe):
         #
         search_method = GreedySearch()
 
-        return BAEIR(goal_function, constraints, transformation, search_method)
+        return BAEGarg2019(goal_function, constraints, transformation, search_method)

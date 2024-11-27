@@ -21,7 +21,7 @@ df = pd.read_csv(output_csv)
 train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
 test_dataset = textattack.datasets.Dataset(test_df.values.tolist(), ["input"])
 print(len(test_dataset))
-model = transformers.AutoModelForSequenceClassification.from_pretrained("./outputs/2024-11-27-04-35-13-047658/best_model/")
+model = transformers.AutoModelForSequenceClassification.from_pretrained("./outputs/2024-11-27-16-58-40-536957/best_model/")
 tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
 model_wrapper = textattack.models.wrappers.HuggingFaceModelWrapper(model, tokenizer)
 

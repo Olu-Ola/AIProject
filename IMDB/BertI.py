@@ -11,6 +11,15 @@ from textattack.loggers import CSVLogger
 from textattack.attack_results import SuccessfulAttackResult
 from IPython.display import display, HTML
 from BaeI import BAEIR
+from textattack.constraints.grammaticality import PartOfSpeech
+from textattack.constraints.pre_transformation import (
+    RepeatModification,
+    StopwordModification,
+)
+from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
+from textattack.goal_functions import UntargetedClassification
+from textattack.search_methods import GreedyWordSwapWIR, GreedySearch
+from textattack.transformations import WordInsertionMaskedLM, WordSwapMaskedLM
 
 output_csv = "../Dataset/IMDB/output_file.csv"
 df = pd.read_csv(output_csv)
@@ -19,11 +28,29 @@ df = pd.read_csv(output_csv)
 train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
 test_dataset = textattack.datasets.Dataset(test_df.values.tolist(), ["input"])
 print(len(test_dataset))
-model = transformers.AutoModelForSequenceClassification.from_pretrained("./outputs/2024-11-27-04-35-13-047658/best_model/")
+model = transformers.AutoModelForSequenceClassification.from_pretrained("./outputs/2024-11-27-16-58-40-536957/best_model/")
 tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
 model_wrapper = textattack.models.wrappers.HuggingFaceModelWrapper(model, tokenizer)
 
-baerecipe = BAEIR("insert").build(model_wrapper)
+transformation = WordInsertionMaskedLM()
+constraints = [RepeatModification(), StopwordModification()]
+constraints.append(PartOfSpeech(allow_verb_noun_swap=True))
+use_constraint = UniversalSentenceEncoder(
+            threshold=0.936338023,
+            metric="cosine",
+            compare_against_original=True,
+            window_size=15,
+            skip_text_shorter_than_window=True,
+        )
+constraints.append(use_constraint)
+#
+# Goal is untargeted classification.
+#
+goal_function = UntargetedClassification(model_wrapper)
+search_method = GreedySearch()
+
+baerecipe = BAEIR(goal_function, constraints, transformation, search_method)
+baerecipe = baerecipe.build(model_wrapper)
 
 # Attack the dataset
 attack_results = Attacker(baerecipe, test_dataset, textattack.AttackArgs(num_examples=-1)).attack_dataset()
