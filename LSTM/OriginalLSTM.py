@@ -19,11 +19,17 @@ df = pd.read_csv(output_csv)
 
 # Split into train (first 900 rows) and test (last 100 rows)
 train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
+train_dataset = textattack.datasets.Dataset(train_df.values.tolist(), ["input"])
 test_dataset = textattack.datasets.Dataset(test_df.values.tolist(), ["input"])
 print(len(test_dataset))
+
 model = textattack.models.helpers.lstm_for_classification.LSTMForClassification.from_pretrained("lstm-imdb")
-tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
-model_wrapper = textattack.models.wrappers.HuggingFaceModelWrapper(model, tokenizer)
+
+emb_layer = textattack.models.helpers.glove_embedding_layer.GloveEmbeddingLayer(emb_layer_trainable=False)
+word2id = emb_layer.word2id
+tokenizer = textattack.models.tokenizers.glove_tokenizer.GloveTokenizer(word2id, pad_token_id = 0, unk_token_id=100)
+#tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
+model_wrapper = textattack.models.wrappers.PyTorchModelWrapper(model, tokenizer)
 
 
 training_args = textattack.TrainingArgs(
