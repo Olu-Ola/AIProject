@@ -55,7 +55,7 @@ baerecipe = BaeIR(goal_function, constraints, transformation, search_method)
 baerecipe = baerecipe.build(model_wrapper)
 
 # Attack the dataset
-attack_results = Attacker(baerecipe, test_dataset, textattack.AttackArgs(num_examples=-1)).attack_dataset()
+attack_results = Attacker(baerecipe, test_dataset, textattack.AttackArgs(num_examples=-1, log_to_csv="BertIR.csv",)).attack_dataset()
 
 # Increase column width for better readability
 pd.options.display.max_colwidth = 480
