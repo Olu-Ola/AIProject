@@ -55,7 +55,7 @@ else:
 df = pd.read_csv(file)
 
 # Split the Pandas Dataframe into Train & Test Data Frames
-train_df, test_df = train_test_split(df, test_size=0.1, random_state=62)
+train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
 #train_df = df[10:]
 #test_df = df[:20]
 # Convert Pandas DataFrame into TextAttack Dataset
@@ -164,20 +164,16 @@ for i, a in enumerate(attack):
     results.append(Attacker(a, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv", disable_stdout=True)).attack_dataset())
 
 accuracy = []
-accuracy2 = []
-accuracy3 = []
-maxperturb = []
-#maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
+maxpert = []
+maxpertuntilsuccess = []
 maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
 for i in results:
-    accuracy2.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
-    accuracy.append(AttackSuccessRate().calculate(i)["original_accuracy"] - AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
-    accuracy3.append(AttackSuccessRate().calculate(i)["successful_attacks"]- AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
-    len(accuracy)
+    accuracy.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+    maxpert.append(WordsPerturbed().calculate(i)["max_words_changed"])
+    maxpertuntilsuccess.append(WordsPerturbed().calculate(i)["num_words_changed_until_success"])
 
 print(accuracy)
-print(accuracy2)
-print(accuracy3)
+
 
 
 #attack_results = Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv" )).attack_dataset()
@@ -218,7 +214,7 @@ for i, result in enumerate(attack_results):
 
 plt.figure(figsize=(8, 6))
 plt.plot(maxperturbation, accuracy, 'o-', label="Attack Results")
-plt.xlabel("Words Perturbed")
+plt.xlabel("Max Words Perturbed %")
 plt.ylabel("Accuracy")
 plt.title("Accuracy vs. Words Perturbed During Attack")
 plt.legend()
@@ -227,6 +223,32 @@ plt.grid(True)
 # Save the plot to a file
 plt.savefig(outputFile + "Plot.png")
 print("Plot saved as 'accuracy_vs_words_perturbed.png'")
+############################################################################
+plt.figure(figsize=(8, 6))
+plt.plot(maxpert, accuracy, 'o-', label="Attack Results")
+plt.xlabel("Max Words Perturbed")
+plt.ylabel("Accuracy")
+plt.title("Accuracy vs. Max Words Perturbed During Attack")
+plt.legend()
+plt.grid(True)
+
+# Save the plot to a file
+plt.savefig(outputFile + "MaxWordsPlot.png")
+print("Plot saved as 'accuracy_vs_words_perturbed.png'")
+
+############################################################################
+plt.figure(figsize=(8, 6))
+plt.plot(maxpertuntilsuccess, accuracy, 'o-', label="Attack Results")
+plt.xlabel("Max Words Perturbed")
+plt.ylabel("Accuracy")
+plt.title("Accuracy vs. Max Words Perturbed During Attack")
+plt.legend()
+plt.grid(True)
+
+# Save the plot to a file
+plt.savefig(outputFile + "UntilSuccessPlot.png")
+print("Plot saved as 'accuracy_vs_words_perturbed.png'")
+
 
 """
 words_perturbed = []
