@@ -158,10 +158,31 @@ else:
 
 attack.__repr__()
 
+results = []
 print("Saving the results to " + outputFile)
-attack_results = Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv" )).attack_dataset()
+for i, a in enumerate(attack):
+    results.append(Attacker(a, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv", disable_stdout=True)).attack_dataset())
+
+accuracy = []
+accuracy2 = []
+accuracy3 = []
+maxperturb = []
+#maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
+maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
+for i in results:
+    accuracy2.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+    accuracy.append(AttackSuccessRate().calculate(i)["original_accuracy"] - AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+    accuracy3.append(AttackSuccessRate().calculate(i)["successful_attacks"]- AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+    len(accuracy)
+
+print(accuracy)
+print(accuracy2)
+print(accuracy3)
 
 
+#attack_results = Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv" )).attack_dataset()
+
+"""
 failedAttack = 0
 maxPert = 0
 max_words_changed = 0
@@ -193,9 +214,10 @@ for i, result in enumerate(attack_results):
         #words_perturbed.append(maxPert)
         words_perturbed.append(num_words_changed/100)
         accuracies.append((failedAttack * 100.0) / (i+1))
+"""
 
 plt.figure(figsize=(8, 6))
-plt.plot(words_perturbed, accuracies, 'o-', label="Attack Results")
+plt.plot(maxperturbation, accuracy, 'o-', label="Attack Results")
 plt.xlabel("Words Perturbed")
 plt.ylabel("Accuracy")
 plt.title("Accuracy vs. Words Perturbed During Attack")
