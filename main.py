@@ -56,8 +56,8 @@ df = pd.read_csv(file)
 
 # Split the Pandas Dataframe into Train & Test Data Frames
 train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
-#train_df = df[10:]
-#test_df = df[:20]
+train_df = df[:10]
+test_df = df[-10:]
 # Convert Pandas DataFrame into TextAttack Dataset
 train_dataset = textattack.datasets.Dataset(train_df.values.tolist(), ["input"])
 test_dataset = textattack.datasets.Dataset(test_df.values.tolist(), ["input"]) 

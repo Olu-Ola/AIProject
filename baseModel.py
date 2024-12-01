@@ -8,14 +8,14 @@ from textattack.models.helpers.word_cnn_for_classification import WordCNNForClas
 class baseModel():
 
     def Bert(model_file):
-        model = AutoModelForSequenceClassification.from_pretrained(model_file).to(textattack.shared.utils.device)
-        tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
+        model = AutoModelForSequenceClassification.from_pretrained(model_file)
+        tokenizer = transformers.AutoTokenizer.from_pretrained(model_file)
         model_wrapper = textattack.models.wrappers.HuggingFaceModelWrapper(model, tokenizer)
         return model_wrapper
 
 
     def LSTM(model_file):
-        model = LSTMForClassification.from_pretrained(model_file).to(textattack.shared.utils.device)
+        model = LSTMForClassification.from_pretrained(model_file)
         emb_layer = textattack.models.helpers.glove_embedding_layer.GloveEmbeddingLayer(emb_layer_trainable=False)
         word2id = emb_layer.word2id
         tokenizer = textattack.models.tokenizers.glove_tokenizer.GloveTokenizer(word2id, pad_token_id = 0, unk_token_id=100)
@@ -24,7 +24,7 @@ class baseModel():
 
 
     def CNN(model_file):
-        model = WordCNNForClassification.from_pretrained(model_file).to(textattack.shared.utils.device)
+        model = WordCNNForClassification.from_pretrained(model_file)
         emb_layer = textattack.models.helpers.glove_embedding_layer.GloveEmbeddingLayer(emb_layer_trainable=False)
         word2id = emb_layer.word2id
         tokenizer = textattack.models.tokenizers.glove_tokenizer.GloveTokenizer(word2id, pad_token_id = 0, unk_token_id=100)
