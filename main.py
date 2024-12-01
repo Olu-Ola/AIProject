@@ -165,28 +165,34 @@ attack_results = Attacker(attack, test_dataset, textattack.AttackArgs(num_exampl
 failedAttack = 0
 maxPert = 0
 max_words_changed = 0
+num_words_changed = 0
 #originalaccuracy = AttackSuccessRate.calculate(attack_results)["original_accuracy"]
 
 words_perturbed = []
 accuracies = []
 
 for i, result in enumerate(attack_results):
-    if isinstance(result, FailedAttackResult):
+    if isinstance(result, SkippedAttackResult):
         failedAttack += 1
-        if isinstance(result, SkippedAttackResult):
-            continue
         continue
-    print("accuracy drop: ")
-    print((failedAttack * 100.0) / (i+1)) 
+    elif isinstance(result, FailedAttackResult):
+        failedAttack += 1
+        continue
+    else:
+        print("accuracy drop: ")
+        print((failedAttack * 100.0) / (i+1)) 
 
-    all_num_words = len(result.original_result.attacked_text.words)
-    num_words_changed = len(result.original_result.attacked_text.all_words_diff(result.perturbed_result.attacked_text))
-    max_words_changed = max(max_words_changed , num_words_changed)
-    maxPert = max_words_changed/100
-    print("MaxPerturbation: ")
-    print(maxPert)
-    words_perturbed.append(maxPert)
-    accuracies.append((failedAttack * 100.0) / (i+1))
+        all_num_words = len(result.original_result.attacked_text.words)
+        num_words_changed += len(result.original_result.attacked_text.all_words_diff(result.perturbed_result.attacked_text))
+        #max_words_changed = max(max_words_changed , num_words_changed)
+        #maxPert = max_words_changed/100
+        
+        print("MaxPerturbation: ")
+        #print(maxPert)
+        print(num_words_changed/100)
+        #words_perturbed.append(maxPert)
+        words_perturbed.append(num_words_changed/100)
+        accuracies.append((failedAttack * 100.0) / (i+1))
 
 plt.figure(figsize=(8, 6))
 plt.plot(words_perturbed, accuracies, 'o-', label="Attack Results")
