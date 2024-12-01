@@ -237,17 +237,7 @@ plt.savefig(outputFile + "MaxWordsPlot.png")
 print("Plot saved as 'accuracy_vs_words_perturbed.png'")
 
 ############################################################################
-plt.figure(figsize=(8, 6))
-plt.plot(maxpertuntilsuccess, accuracy, 'o-', label="Attack Results")
-plt.xlabel("Max Words Perturbed")
-plt.ylabel("Accuracy")
-plt.title("Accuracy vs. Max Words Perturbed During Attack")
-plt.legend()
-plt.grid(True)
 
-# Save the plot to a file
-plt.savefig(outputFile + "UntilSuccessPlot.png")
-print("Plot saved as 'accuracy_vs_words_perturbed.png'")
 
 
 """
