@@ -93,47 +93,49 @@ class attackrecipe(AttackRecipe):
         #return attacks
     
     def bertI(model_wrapper):
-        attacks = []
-        maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
-        for i, _ in enumerate(maxperturbation):
-            transformation = WordInsertionMaskedLM()
-            constraints = [RepeatModification(), StopwordModification()]
-            #constraints.append(MaxWordsPerturbed(max_percent = maxperturbation[i]))
-            #constraints.append(PartOfSpeech(allow_verb_noun_swap=True))
-            use_constraint = UniversalSentenceEncoder(
-                threshold=0.936338023,
-                metric="cosine",
-                compare_against_original=True,
-                window_size=15,
-                skip_text_shorter_than_window=True,
-            )
-            constraints.append(use_constraint)
-            goal_function = UntargetedClassification(model_wrapper)
-            search_method = GreedyWordSwapWIR(wir_method="delete")
-            attacks.append(Attack(goal_function, constraints, transformation, search_method))
-        return attacks
+        #attacks = []
+        #maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
+        #for i, _ in enumerate(maxperturbation):
+        transformation = WordInsertionMaskedLM()
+        constraints = [RepeatModification(), StopwordModification()]
+        #constraints.append(MaxWordsPerturbed(max_percent = maxperturbation[i]))
+        #constraints.append(PartOfSpeech(allow_verb_noun_swap=True))
+        use_constraint = UniversalSentenceEncoder(
+            threshold=0.936338023,
+            metric="cosine",
+            compare_against_original=True,
+            window_size=15,
+            skip_text_shorter_than_window=True,
+        )
+        constraints.append(use_constraint)
+        goal_function = UntargetedClassification(model_wrapper)
+        search_method = GreedySearch()
+        return Attack(goal_function, constraints, transformation, search_method)
+            #attacks.append(Attack(goal_function, constraints, transformation, search_method))
+        #return attacks
     
     def bertIR(model_wrapper):
-        attacks = []
-        maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
-        for i, _ in enumerate(maxperturbation):
-            transformations = [WordSwapMaskedLM(method="bae", max_candidates=50, min_confidence=0.0),WordInsertionMaskedLM()]
-            transformation = textattack.transformations.composite_transformation.CompositeTransformation(transformations)
-            constraints = [RepeatModification(), StopwordModification()]
-            constraints.append(MaxWordsPerturbed(max_percent = maxperturbation[i]))
-            constraints.append(PartOfSpeech(allow_verb_noun_swap=False, compare_against_original=False))
-            use_constraint = UniversalSentenceEncoder(
-                threshold=0.936338023,
-                metric="cosine",
-                compare_against_original=True,
-                window_size=15,
-                skip_text_shorter_than_window=True,
-            )
-            constraints.append(use_constraint)
-            goal_function = UntargetedClassification(model_wrapper)
-            search_method = GreedyWordSwapWIR(wir_method="delete")
-            attacks.append(Attack(goal_function, constraints, transformation, search_method))
-        return attacks
+        #attacks = []
+        #maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
+        #for i, _ in enumerate(maxperturbation):
+        transformations = [WordSwapMaskedLM(method="bae", max_candidates=50, min_confidence=0.0),WordInsertionMaskedLM()]
+        transformation = textattack.transformations.composite_transformation.CompositeTransformation(transformations)
+        constraints = [RepeatModification(), StopwordModification()]
+        #constraints.append(MaxWordsPerturbed(max_percent = maxperturbation[i]))
+        constraints.append(PartOfSpeech(allow_verb_noun_swap=False, compare_against_original=False))
+        use_constraint = UniversalSentenceEncoder(
+            threshold=0.936338023,
+            metric="cosine",
+            compare_against_original=True,
+            window_size=15,
+            skip_text_shorter_than_window=True,
+        )
+        constraints.append(use_constraint)
+        goal_function = UntargetedClassification(model_wrapper)
+        search_method = GreedySearch()
+        return Attack(goal_function, constraints, transformation, search_method)
+            #attacks.append(Attack(goal_function, constraints, transformation, search_method))
+        #return attacks
         
 
 

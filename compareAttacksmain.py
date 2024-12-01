@@ -53,11 +53,11 @@ for i, file in enumerate(datasets):
     models = []
     outputFile = []
     modelfiles = ["Bert", "Lstm", "Cnn"]
-    models.append(baseModel.Bert("./BestModels/" + datasetnames[i] + modelfiles[0] + "Outputs/best_model/")) # modelName[i][0]
+    models.append(baseModel.Bert("../BestModels/" + datasetnames[i] + modelfiles[0] + "Outputs/best_model/")) # modelName[i][0]
     
-    #models.append(baseModel.LSTM("./BestModels/" + datasetnames[i] + modelfiles[1]+ "Outputs/best_model/")) # modelName[i][1]
+    models.append(baseModel.LSTM("../BestModels/" + datasetnames[i] + modelfiles[1]+ "Outputs/best_model/")) # modelName[i][1]
     
-    #models.append(baseModel.CNN("./BestModels/" + datasetnames[i] + modelfiles[2]+ "Outputs/best_model/")) # modelName[i][2]
+    models.append(baseModel.CNN("../BestModels/" + datasetnames[i] + modelfiles[2]+ "Outputs/best_model/")) # modelName[i][2]
 
     print("""
          __   _   _             _   
@@ -73,10 +73,12 @@ for i, file in enumerate(datasets):
     for j, model in enumerate(models):
         attacks.append(attackrecipe.textfooler(model))
         outputfilenames.append(datasetnames[i]+modelfiles[j]+"textfooler")
-        #attacks.append(attackrecipe.bertR(model))
-        #outputfilenames.append(datasetnames[i]+modelfiles[j]+"bertR")
-        #attacks.append(attackrecipe.bertI(model))
-        #attacks.append(attackrecipe.bertIR(model))
+        attacks.append(attackrecipe.bertR(model))
+        outputfilenames.append(datasetnames[i]+modelfiles[j]+"baeR")
+        attacks.append(attackrecipe.bertI(model))
+        outputfilenames.append(datasetnames[i]+modelfiles[j]+"baeI")
+        attacks.append(attackrecipe.bertIR(model))
+        outputfilenames.append(datasetnames[i]+modelfiles[j]+"baeIR")
     
 
     results = []
@@ -124,7 +126,11 @@ for i, file in enumerate(datasets):
 
         # Display or save the DataFrame
         print(df)
-        df.to_csv("attack_results.csv", index=False)
+        df.to_csv(datasetnames[i]+"attack_results.csv", index=False)
+
+        html_file = datasetnames[i]+"attack_results.html"
+        df.to_html(html_file, index=False, escape=False)  # `escape=False` allows HTML tags like <span> to be included
+        print(f"Results saved to {html_file}")
                 
 
 

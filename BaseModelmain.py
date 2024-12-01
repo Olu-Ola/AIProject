@@ -63,7 +63,7 @@ for i, file in enumerate(datasets):
             per_device_train_batch_size=16, # Batch size
             learning_rate=2e-5,             # Learning rate
             early_stopping_epochs=2,
-            output_dir = "./BestModels/"+outputFile[j]
+            output_dir = "../BestModels/"+outputFile[j]
         )
 
         trainer = textattack.Trainer(
