@@ -18,8 +18,8 @@ class attackrecipe(AttackRecipe):
 
     def textfooler(model_wrapper):
         attacks = []
-        #maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
-        maxperturbation = [0,0.1]
+        maxperturbation = [0,0.2,0.40,0.60,0.80,1]
+        #maxperturbation = [0,0.1]
         for i, _ in enumerate(maxperturbation):
             #Transforms an input by replacing its words with synonyms in the word embedding space.
             transformation = WordSwapEmbedding(max_candidates=50)
@@ -69,8 +69,8 @@ class attackrecipe(AttackRecipe):
     
     def bertR(model_wrapper):
         attacks = []
-        #maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
-        maxperturbation = [0,0.1]
+        maxperturbation = [0,0.2,0.40,0.60,0.80,1]
+        #maxperturbation = [0,0.1]
         for i, _ in enumerate(maxperturbation):
             # Generate potential replacements for a word using a masked language model.
 
@@ -96,8 +96,8 @@ class attackrecipe(AttackRecipe):
     
     def bertI(model_wrapper):
         attacks = []
-        #maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
-        maxperturbation = [0,0.1]
+        maxperturbation = [0,0.2,0.40,0.60,0.80,1]
+        #maxperturbation = [0,0.1]
         for i, _ in enumerate(maxperturbation):
             transformation = WordInsertionMaskedLM()
             constraints = [RepeatModification(), StopwordModification()]
@@ -118,8 +118,8 @@ class attackrecipe(AttackRecipe):
     
     def bertIR(model_wrapper):
         attacks = []
-        #maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
-        maxperturbation = [0,0.1]
+        maxperturbation = [0,0.2,0.40,0.60,0.80,1]
+        #maxperturbation = [0,0.1]
         for i, _ in enumerate(maxperturbation):
             transformations = [WordSwapMaskedLM(method="bae", max_candidates=50, min_confidence=0.0),WordInsertionMaskedLM()]
             transformation = textattack.transformations.composite_transformation.CompositeTransformation(transformations)
