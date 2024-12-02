@@ -129,61 +129,68 @@ print("""
 """)
 
 # Run the attacks on the model.
-print("Which attack should be applied: \n 1. TextFooler \n 2. Bae Replacement Only \n 3. Bae Insertion Only \n 4. Bae Insertion + Replacement")
-attack_choice = input("Your Choice: ")
+allAttacks = []
 
 # in order to make an attack in Textattack library, we need 4 parameters. Goal Function, Constraints, Trasnformation and SearchMethod.
 
-if attack_choice == "1":
-    outputFile += "TextFooler"
-    attack = attackrecipe.textfooler(model)
+allAttacks.append(attackrecipe.textfooler(model))
+allAttacks.append(attackrecipe.bertR(model))
+allAttacks.append(attackrecipe.bertI(model))
+allAttacks.append(attackrecipe.bertIR(model))
 
-
-elif attack_choice == "2":
-    outputFile += "BaeReplace"
-    attack = attackrecipe.bertR(model)
-
-elif attack_choice == "3":
-    outputFile = "BaeInsert"
-    attack = attackrecipe.bertI(model)
-
-else:
-    outputFile += "BaeInsertAndReplace"
-    attack = attackrecipe.bertIR(model)
-
-attack.__repr__()
-
-#attack_results = Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv", disable_stdout=True )).attack_dataset()
-
+# allAttacks[4].attacks[10]
 
 
 results = []
-print("Saving the results to " + outputFile)
-for i, a in enumerate(attack):
-    results.append(Attacker(a, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, disable_stdout=True)).attack_dataset())
+for j,attack in enumerate(allAttacks):
+    for i, a in enumerate(attack):
+        results.append(Attacker(a, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, disable_stdout=True)).attack_dataset())
 
+# results -? [4] & [10]
+# result - [4] 0> textfooler, [1].bertR, ....
+# textfooler-> 10times the results
 
     
-accuracy = []
+#accuracy = []
 maxpert = []
 maxpertuntilsuccess = []
 maxperturbation = [0,0.1,0.2,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
-for i in results:
-    accuracy.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
-    maxpert.append(WordsPerturbed().calculate(i)["max_words_changed"])
-    maxpertuntilsuccess.append(WordsPerturbed().calculate(i)["num_words_changed_until_success"])
 
-print(accuracy)
+accuracyTextFooler = []
+accuracyBaeR = []
+accuracyBaeI = []
+accuracyBaeIR = []
+
+for k in results:
+    for i in k:
+        if i == 0:
+            accuracyTextFooler.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+        elif i == 1:
+            accuracyBaeR.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+        elif i == 2:
+            accuracyBaeI.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+        elif i == 3:
+            accuracyBaeIR.append(AttackSuccessRate().calculate(i)["attack_accuracy_perc"])
+
+        
+        #maxpert.append(WordsPerturbed().calculate(i)["max_words_changed"])
+        #maxpertuntilsuccess.append(WordsPerturbed().calculate(i)["num_words_changed_until_success"])
+
+#print(accuracy)
 
 plt.figure(figsize=(8, 6))
-plt.plot(maxperturbation, accuracy, 'o-', label="Attack Results")
-plt.xlabel("Max Words Perturbed %")
-plt.ylabel("Accuracy")
-plt.title("Accuracy vs. Words Perturbed During Attack")
+plt.plot(maxperturbation, accuracyTextFooler, label='TEXTFOOLER', color='blue', linewidth=1)
+plt.plot(maxperturbation, accuracyBaeR, label='BAE-R', color='orange', linewidth=1)
+plt.plot(maxperturbation, accuracyBaeI, label='BAE-I', color='green', linewidth=1)
+plt.plot(maxperturbation, accuracyBaeIR, label='BAE-R+I', color='purple', linewidth=1)
+
+plt.xlabel(" Maximum Percent Perturbation")
+plt.ylabel("Test Accuracy")
+plt.title("Test Accuracy vs. Maximum Percent Perturbation")
 plt.legend()
 plt.grid(True)
 
 # Save the plot to a file
-plt.savefig("./png/"+outputFile + "Plot.png")
-print("Plot saved as 'accuracy_vs_words_perturbed.png'")
+plt.savefig("./png/" + outputFile + "Plot.png")
+print("Plot saved as " + outputFile + ".png'")
 
