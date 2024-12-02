@@ -7,6 +7,7 @@ from attack import attackrecipe
 from textattack import Attacker
 from textattack.attack_results import SuccessfulAttackResult
 from textattack.shared import AttackedText
+from textattack.loggers import CSVLogger
 
 
 
@@ -32,14 +33,14 @@ for i, file in enumerate(datasets):
     df = pd.read_csv(file)
 
     # Split the Pandas Dataframe into Train & Test Data Frames
-    #train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
-    train_df = df[:10]
-    test_df = df[-10:]
+    train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
+    #train_df = df[:10]
+    test_df = test_df[-15:]
     # Convert Pandas DataFrame into TextAttack Dataset
-    train_dataset = textattack.datasets.Dataset(train_df.values.tolist(), ["input"])
+    #train_dataset = textattack.datasets.Dataset(train_df.values.tolist(), ["input"])
     test_dataset = textattack.datasets.Dataset(test_df.values.tolist(), ["input"]) 
 
-    print("Dataset "+ datasetnames[i] +" Loaded. Train & Test Split : 900 / 100.\n\n")
+    print("Dataset "+ datasetnames[i] +" Loaded.\n\n")
 
 
     print("""
@@ -53,11 +54,11 @@ for i, file in enumerate(datasets):
     models = []
     outputFile = []
     modelfiles = ["Bert", "Lstm", "Cnn"]
-    models.append(baseModel.Bert("../BestModels/" + datasetnames[i] + modelfiles[0] + "Outputs/best_model/")) # modelName[i][0]
+    #models.append(baseModel.Bert("./ModelsOutputs/" + datasetnames[i] + modelfiles[0] + "/best_model/")) # modelName[i][0]
     
-    models.append(baseModel.LSTM("../BestModels/" + datasetnames[i] + modelfiles[1]+ "Outputs/best_model/")) # modelName[i][1]
+    #models.append(baseModel.LSTM("./ModelsOutputs/" + datasetnames[i] + modelfiles[1]+ "/best_model/")) # modelName[i][1]
     
-    models.append(baseModel.CNN("../BestModels/" + datasetnames[i] + modelfiles[2]+ "Outputs/best_model/")) # modelName[i][2]
+    models.append(baseModel.CNN("./ModelsOutputs/" + datasetnames[i] + modelfiles[2]+ "/best_model/")) # modelName[i][2]
 
     print("""
          __   _   _             _   
@@ -80,26 +81,28 @@ for i, file in enumerate(datasets):
         attacks.append(attackrecipe.bertIR(model))
         outputfilenames.append(datasetnames[i]+modelfiles[j]+"baeIR")
     
+    # Dataset = Dataset[i]
+    # Model = model[0]
+    # attacks = [4]--> textFooler, R, I , IR
 
     results = []
     for k, attack in enumerate(attacks):
-        results.append(Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputfilenames[k]+".csv", disable_stdout=True)).attack_dataset())
+        results.append(Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=False, disable_stdout=True)).attack_dataset())
 
+    # I have 4 results but there are len(datasaet) instances of [originaltext],[perturbedtext]
 
     rows = []
-    for i in range(len(test_dataset)):
+    for k in range(len(test_dataset)):
         row = {"original_text": None, "textfooler_result": None, "bertr_result": None, "berti_result": None, "bertir_result": None}
         for j in range(len(attacks)):
-                if isinstance(results[j][i], SuccessfulAttackResult):
-
-                    original_text, perturbed_text = results[j][i].diff_color("html")
+                if isinstance(results[j][k], SuccessfulAttackResult):
+                    original_text, perturbed_text = results[j][k].diff_color("html")
                     original_text = original_text.replace("\n", AttackedText.SPLIT_TOKEN)
                     perturbed_text = perturbed_text.replace("\n", AttackedText.SPLIT_TOKEN)
+                    if row["original_text"] is None:                                           
+                        row["original_text"] = original_text
                     if j == 0:                       
-                        print(original_text)
-                        if row["original_text"] is None:
-                            row["original_text"] = original_text
-                            row["textfooler_result"] = perturbed_text
+                        row["textfooler_result"] = perturbed_text
                     elif j == 1:
                         row["bertr_result"] = perturbed_text
                     elif j == 2:
@@ -122,15 +125,18 @@ for i, file in enumerate(datasets):
                     #print("AttackFailed")
         rows.append(row)
 
-        df = pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
 
-        # Display or save the DataFrame
-        print(df)
-        df.to_csv(datasetnames[i]+"attack_results.csv", index=False)
+    # Display or save the DataFrame
+    #print(df)
+    #df.to_csv(datasetnames[i]+"attack_results.csv", index=False)
 
-        html_file = datasetnames[i]+"attack_results.html"
-        df.to_html(html_file, index=False, escape=False)  # `escape=False` allows HTML tags like <span> to be included
-        print(f"Results saved to {html_file}")
+    html_file = "./html/Cnn"+datasetnames[i]+"attack_results.html"
+    df.to_html(html_file, index=False, escape=False)  # `escape=False` allows HTML tags like <span> to be included
+    print(f"Results saved to {html_file}")
+
+    #CSVLogger.flush()
+    #CSVLogger.clear()
                 
 
 

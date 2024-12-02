@@ -47,16 +47,18 @@ for i, file in enumerate(datasets):
     
     model = []
     outputFile = []
-    model.append(baseModel.Bert(modelNames[0])) # modelName[i][0]
-    outputFile.append(datasetnames[i]+"BertOutputs")
-
-    model.append(baseModel.LSTM(modelNames[1])) # modelName[i][1]
-    outputFile.append(datasetnames[i]+"LstmOutputs")
-
-    model.append(baseModel.CNN(modelNames[2])) # modelName[i][2]
-    outputFile.append(datasetnames[i]+"CnnOutputs")
+    
         
     for j in range(3):
+
+        model.append(baseModel.Bert(modelNames[0])) # modelName[i][0]
+        outputFile.append(datasetnames[i]+"BertOutputs")
+    
+        model.append(baseModel.LSTM(modelNames[1])) # modelName[i][1]
+        outputFile.append(datasetnames[i]+"LstmOutputs")
+    
+        model.append(baseModel.CNN(modelNames[2])) # modelName[i][2]
+        outputFile.append(datasetnames[i]+"CnnOutputs")
         # Set the trainer Arguments
         training_args = textattack.TrainingArgs(
             num_epochs=2,                   # Number of epochs

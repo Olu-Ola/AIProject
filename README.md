@@ -1,5 +1,17 @@
 # AIProject
 
+## Dataset
+
+In this Project, we have worked with the sentiment analysis datasets namely IMDB, YELP and AMAZON, found from the link:
+https://archive.ics.uci.edu/dataset/331/sentiment+labelled+sentences
+
+We converted the txt files into CSVs for easy manipulation through Pandas Dataframes.
+
+## Models
+
+
+
+
 
 
 ## Getting started

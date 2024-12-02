@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 #from attack import attackrecipe
 
 from baseModel import baseModel
-from attack import attackrecipe
+from graphattack import attackrecipe
 
 
 from textattack import Attacker
@@ -158,14 +158,14 @@ else:
 
 attack.__repr__()
 
-attack_results = Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv", disable_stdout=True )).attack_dataset()
+#attack_results = Attacker(attack, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv", disable_stdout=True )).attack_dataset()
 
 
-""""
+
 results = []
 print("Saving the results to " + outputFile)
 for i, a in enumerate(attack):
-    results.append(Attacker(a, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, log_to_csv= "csv/"+outputFile+".csv", disable_stdout=True)).attack_dataset())
+    results.append(Attacker(a, test_dataset, textattack.AttackArgs(num_examples = -1, enable_advance_metrics=True, disable_stdout=True)).attack_dataset())
 
 
     
@@ -189,7 +189,6 @@ plt.legend()
 plt.grid(True)
 
 # Save the plot to a file
-plt.savefig(outputFile + "Plot.png")
+plt.savefig("./png/"+outputFile + "Plot.png")
 print("Plot saved as 'accuracy_vs_words_perturbed.png'")
-"""
 
